@@ -6,7 +6,7 @@ export default function App() {
   const [productos, setProductos]   = useState([])
   const [formulario, setFormulario] = useState({
     nombre: "", descripcion: "", precio: "",
-    stock: "", categoria: "", marca: "", imagen_url: ""
+    stock: "", categoria: "", origen: "", imagen_url: ""
   })
   const [editando, setEditando]     = useState(null)
   const [error, setError]           = useState("")
@@ -27,15 +27,24 @@ export default function App() {
   }
 
   const guardar = async () => {
-    // Validar campos obligatorios
-    if (!formulario.nombre || !formulario.precio || !formulario.stock) {
-      setError("Nombre, precio y stock son obligatorios")
+    // Validar campos obligatorios antesd de enviar
+    if (!formulario.nombre || !formulario.precio || !formulario.stock || !formulario.descripcion || !formulario.categoria || !formulario.origen) {
+      setError("Todos los campos son obligatorios excepto la imagen")
+      return
+    }
+    if (formulario.precio <= 0) {
+    setError("El precio debe ser mayor a 0")
+    return
+    }
+
+    if (formulario.stock < 0) {
+      setError("El stock no puede ser negativo")
       return
     }
     setError("")
 
     if (editando) {
-      // Actualizar
+      // actualizar
       await fetch(`${API}/productos/${editando}`, {
         method:  "PUT",
         headers: { "Content-Type": "application/json" },
@@ -54,7 +63,7 @@ export default function App() {
     // Limpiar formulario y recargar
     setFormulario({
       nombre: "", descripcion: "", precio: "",
-      stock: "", categoria: "", marca: "", imagen_url: ""
+      stock: "", categoria: "", origen: "", imagen_url: ""
     })
     obtenerProductos()
   }
@@ -67,7 +76,7 @@ export default function App() {
       precio:      producto.precio,
       stock:       producto.stock,
       categoria:   producto.categoria,
-      marca:       producto.marca,
+      origen:        producto.origen,
       imagen_url:  producto.imagen_url || ""
     })
   }
@@ -84,7 +93,7 @@ export default function App() {
 
     
         <h1 className="text-3xl font-bold text-gray-800 mb-8">
-          Panel de Productos
+          Panel de Productos Leonali
         </h1>
 
         {/* Form */}
@@ -98,12 +107,12 @@ export default function App() {
           )}
 
           <div className="grid grid-cols-2 gap-4">
-            <input name="nombre"      value={formulario.nombre}      onChange={handleChange} placeholder="Nombre"      className="border rounded-lg p-2 col-span-2" />
-            <textarea name="descripcion" value={formulario.descripcion} onChange={handleChange} placeholder="Descripción" className="border rounded-lg p-2 col-span-2" rows={2} />
-            <input name="precio"      value={formulario.precio}      onChange={handleChange} placeholder="Precio"      className="border rounded-lg p-2" type="number" />
-            <input name="stock"       value={formulario.stock}       onChange={handleChange} placeholder="Stock"       className="border rounded-lg p-2" type="number" />
-            <input name="categoria"   value={formulario.categoria}   onChange={handleChange} placeholder="Categoría"   className="border rounded-lg p-2" />
-            <input name="marca"       value={formulario.marca}       onChange={handleChange} placeholder="Marca"       className="border rounded-lg p-2" />
+            <input name="nombre" required value={formulario.nombre}      onChange={handleChange} placeholder="Nombre"      className="border rounded-lg p-2 col-span-2" />
+            <textarea name="descripcion" required value={formulario.descripcion} onChange={handleChange} placeholder="Descripción" className="border rounded-lg p-2 col-span-2" rows={2} />
+            <input name="precio" required value={formulario.precio}      onChange={handleChange} placeholder="Precio"      className="border rounded-lg p-2" type="number" />
+            <input name="stock" required value={formulario.stock}       onChange={handleChange} placeholder="Stock"       className="border rounded-lg p-2" type="number" />
+            <input name="categoria"   required value={formulario.categoria}   onChange={handleChange} placeholder="Categoría"   className="border rounded-lg p-2" />
+            <input name="origen" required value={formulario.origen}      onChange={handleChange} placeholder="Origen"      className="border rounded-lg p-2" />
             <input name="imagen_url"  value={formulario.imagen_url}  onChange={handleChange} placeholder="URL de imagen (opcional)" className="border rounded-lg p-2 col-span-2" />
           </div>
 
@@ -116,7 +125,7 @@ export default function App() {
             </button>
             {editando && (
               <button
-                onClick={() => { setEditando(null); setFormulario({ nombre: "", descripcion: "", precio: "", stock: "", categoria: "", marca: "", imagen_url: "" }) }}
+                onClick={() => { setEditando(null); setFormulario({ nombre: "", descripcion: "", precio: "", stock: "", categoria: "", origen: "", imagen_url: "" }) }}
                 className="bg-gray-400 text-white px-6 py-2 rounded-lg hover:bg-gray-500"
               >
                 Cancelar
@@ -132,7 +141,7 @@ export default function App() {
               <tr>
                 <th className="p-3 text-left">Nombre</th>
                 <th className="p-3 text-left">Categoría</th>
-                <th className="p-3 text-left">Marca</th>
+                <th className="p-3 text-left">Origen</th>
                 <th className="p-3 text-left">Precio</th>
                 <th className="p-3 text-left">Stock</th>
                 <th className="p-3 text-left">Acciones</th>
@@ -150,7 +159,7 @@ export default function App() {
                   <tr key={p.id} className="border-t hover:bg-gray-50">
                     <td className="p-3">{p.nombre}</td>
                     <td className="p-3">{p.categoria}</td>
-                    <td className="p-3">{p.marca}</td>
+                    <td className="p-3">{p.origen}</td>
                     <td className="p-3">${p.precio}</td>
                     <td className="p-3">{p.stock}</td>
                     <td className="p-3 flex gap-2">
