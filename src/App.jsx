@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react"
 
-const API = "https://panel-productos-pt-leonali-production.up.railway.app/api"
+const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:8000";
+const API = `${API_BASE}/api`;
 
 export default function App() {
   const [productos, setProductos]   = useState([])
