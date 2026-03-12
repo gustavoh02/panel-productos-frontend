@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react"
 
-const API = "http://localhost:8000/api"
+const API = "https://panel-productos-pt-leonali-production.up.railway.app/api"
 
 export default function App() {
   const [productos, setProductos]   = useState([])
